@@ -5,7 +5,7 @@ library(ggplot2)
 library(lubridate)
 
 co2_data <- read_csv(
-  "CapeGrim_CO2_data_download.csv",
+  "Original Dataset.csv",
   skip = 24,
   n_max = 599,
   locale = locale(encoding = "Latin1"),
@@ -21,46 +21,65 @@ co2_data <- co2_data %>%
 co2_filtered <- co2_data %>%
   filter(Date_full >= as.Date("1980-01-01"),
          Date_full <= as.Date("2024-12-31"))
-
+co2_filtered$YYYY <- as.numeric(co2_filtered$YYYY)
 head(co2_filtered)
 
-ggplot(co2_filtered, aes(x = Date_full, y = `CO2(ppm)`)) +
-  geom_point(size = 0.7) +
-  geom_smooth(method = "loess", se = FALSE, linewidth = 0.9) +
-  labs(
-    title = "Scatter Plot of Atmospheric CO2 Concentration (1980–2024)",
-    x = "Year",
-    y = "CO2 (ppm)",
-    caption = "Figure 1: Scatter plot showing monthly CO2 concentration at Cape Grim from 1980 to 2024 with a smoothed trend line."
-  ) +
-  theme_minimal()
+# Decadal Plot ----
+co2_filtered$Decade <- paste0(floor(co2_filtered$YYYY/10)*10, "s")
 
+
+# Calculate Annual Growth Rate Mean ----
 co2_yearly <- co2_filtered %>%
-  group_by(YYYY) %>%
-  summarise(mean_CO2 = mean(`CO2(ppm)`, na.rm = TRUE))
+  group_by(YYYY, Decade) %>%
+  summarise(growth_rate = mean(`GR(ppm/yr)`, na.rm = TRUE))
 
-ggplot(co2_yearly, aes(x = factor(YYYY), y = mean_CO2)) +
-  geom_col() +
-  labs(
-    title = "Average Annual Atmospheric CO2 Concentration (1980–2024)",
-    x = "Year",
-    y = "Average CO2 (ppm)",
-    caption = "Figure 1: Bar chart showing yearly average CO2 concentration at Cape Grim from 1980 to 2024."
-  ) +
-  theme_minimal() +
-  theme(
-    axis.text.x = element_text(angle = 90, size = 6)
-  )
+# Calculate Decadal Mean ----
+decade_avg <- co2_yearly %>%
+  group_by(Decade) %>%
+  summarise(avg_growth = mean(growth_rate))
 
-ggplot(co2_yearly, aes(x = factor(YYYY), y = mean_CO2)) +
-  geom_col() +
-  labs(
-    title = "Trend Analysis of Atmospheric Carbon Dioxide Levels at Cape Grim (1980–2024)",
-    x = "Year",
-    y = "CO2 Concentration (ppm)",
-    caption = "Figure 1: Bar chart showing yearly average CO2 concentration at Cape Grim from 1980 to 2024."
+# Plots ----
+decade_avg <- decade_avg %>%
+  mutate(
+    Decade = as.numeric(str_sub(Decade, 1, 4))
+  ) 
+ggplot(co2_yearly, aes(x = YYYY, y = growth_rate)) +
+  
+  # Bar chart
+  geom_col(fill = "#11A9CC") +
+  
+  # Red horizontal average lines
+  
+  geom_segment(
+    data = decade_avg,
+    aes(
+      x = Decade,
+      xend = Decade + 9,
+      y = avg_growth,
+      yend = avg_growth
+    ),
+    color = "red",
+    linewidth = 1.2
   ) +
-  theme_minimal() +
-  theme(
-    axis.text.x = element_text(angle = 90, size = 6)
-  )
+  
+  # Red ppm labels
+  geom_text(
+    data = decade_avg,
+    aes(
+      x = Decade + 4.5,
+      y = avg_growth + 0.08,
+      label = paste0(round(avg_growth, 2), " ppm")
+    ),
+    color = "black",
+    fontface = "bold",
+    size = 4,
+    bg.color = "red"
+  ) +
+  
+  labs(
+    title = "Annual and Decadal Growth Rates for Carbon Dioxide (CO2)",
+    x = "Year",
+    y = "Parts per million per year"
+  ) +
+  
+  theme_minimal(base_size = 14)
