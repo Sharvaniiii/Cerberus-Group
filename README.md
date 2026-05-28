@@ -19,26 +19,29 @@ https://www.csiro.au/greenhouse-gases/
 ## Methods Used
 - Data cleaning and filtering
 - Scatter plot with regression analysis
-- Boxplot analysis by decade
+- Side-by-side boxplot analysis by decade
 - Bar chart analysis
 ## Software Used
 - RStudio
 - ggplot2
 - GitHub
+- tidyverse
 ## How to run the analysis
 1. Download the dataset `Original Dataset.csv`.
-2. Save the dataset in the `data/` folder as:
-   `data/Original Dataset.csv`
-3. Open `code/main_analysis.R` in RStudio.
+2. Save the dataset in the `Dataset/` folder as:
+   `Dataset/Original Dataset.csv`
+3. Open `Code/main_analysis.R` in RStudio.
 4. Make sure the working directory is set to the main project folder.
 5. Run the script from top to bottom.
-6. The figures and tables will be saved in the `outputs/` folder.
+6. The figures and tables will be saved in the `Outputs/` folder.
 
 The script reproduces all figures and tables used in the final report.
 
 Optional: Run individual analysis files
 
-The analysis can also be run one plot at a time using the individual R scripts in the `code/` folder:
+The analysis can also be run one plot at a time using the individual R scripts in the `Code/` folder:
 - `growth_rate_analysis.R` reproduces the annual and decadal CO₂ growth-rate plot.
 - `regression_analysis.R` reproduces the long-term CO₂ trend and linear regression results.
 - `boxplot_analysis.R` reproduces the side-by-side boxplot and decadal summary table.
+
+To run an individual analysis file, open the relevant script in RStudio and run it from top to bottom. Make sure the dataset is stored in the Dataset/ folder before running the script.
