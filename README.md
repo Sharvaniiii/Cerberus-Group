@@ -20,7 +20,6 @@ https://www.csiro.au/greenhouse-gases/
 - Data cleaning and filtering
 - Scatter plot with regression analysis
 - Boxplot analysis by decade
-- Histogram analysis
 - Bar chart analysis
 ## Software Used
 - RStudio
