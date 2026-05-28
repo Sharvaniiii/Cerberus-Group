@@ -77,3 +77,15 @@ ggplot(cape, aes(x = Decade, y = CO2, fill = Decade)) +
     caption = "Centre line = median; box = interquartile range (IQR); white diamond = mean."
   ) +
   theme_bw() 
+
+decade_summary <- cape %>%
+  group_by(Decade) %>%
+  summarise(
+    `Median CO2 (ppm)` = round(median(CO2, na.rm = TRUE), 2),
+    `Q1 CO2 (ppm)` = round(quantile(CO2, 0.25, na.rm = TRUE), 2),
+    `Q3 CO2 (ppm)` = round(quantile(CO2, 0.75, na.rm = TRUE), 2),
+    `IQR (ppm)` = round(IQR(CO2, na.rm = TRUE), 2),
+    .groups = "drop"
+  )
+
+decade_summary
